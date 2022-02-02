@@ -1,7 +1,4 @@
 package com.tictactoe;
-
-import javax.swing.plaf.ScrollBarUI;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class TicTacToeGame {
@@ -10,27 +7,21 @@ public class TicTacToeGame {
 
     public static void run() {
         String input = getInitialCells();
+
         char[] charArray = input.toCharArray();
         gameGrid = createGrid(charArray);
-        printGrid();
 
+        printGrid();
         playMove();
-
         printGrid();
-
         printResult();
     }
 
     private static void printResult(){
-        if(checkGameStatus() == 1) {
-            System.out.println("X wins");
-        } else if(checkGameStatus() == 2) {
-            System.out.println("O wins");
-        } else if(checkGameStatus() == 3) {
-            System.out.println("Game not finished");
-        } else {
-            System.out.println("Draw");
-        }
+        if(checkGameStatus() == 1) { System.out.println("X wins"); }
+        else if(checkGameStatus() == 2) { System.out.println("O wins"); }
+        else if(checkGameStatus() == 3) { System.out.println("Game not finished"); }
+        else { System.out.println("Draw"); }
     }
 
     private static int checkGameStatus() {
@@ -75,10 +66,9 @@ public class TicTacToeGame {
 
     private static void playMove() {
         while(true) {
+            int i, j;
             System.out.print("Enter the coordinates: ");
             String[] coordinatesInput = scan.nextLine().split(" ");
-
-            int i=0, j=0;
 
             try {
                 i = Integer.parseInt(coordinatesInput[0]) - 1;
@@ -91,13 +81,11 @@ public class TicTacToeGame {
 
             if (!(i >= 0 && i < 3 && j >= 0 && j < 3)) {
                 System.out.println("Coordinates should be from 1 to 3!");
+            } else if(gameGrid[i][j].equals(" ")) {
+                gameGrid[i][j] = getPlaySign();
+                break;
             } else {
-                if(gameGrid[i][j].equals(" ")) {
-                    gameGrid[i][j] = getPlaySign();
-                    break;
-                } else {
-                    System.out.println("This cell is occupied! Choose another one!");
-                }
+                System.out.println("This cell is occupied! Choose another one!");
             }
         }
     }
@@ -136,14 +124,9 @@ public class TicTacToeGame {
         System.out.println("---------");
         for(int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (j == 0) {
-                    System.out.print("| ");
-                }
-                if (j != 2) {
-                    System.out.print(gameGrid[i][j] + " ");
-                } else {
-                    System.out.print(gameGrid[i][j] + " |");
-                }
+                if (j == 0) { System.out.print("| "); }
+                if (j != 2) { System.out.print(gameGrid[i][j] + " "); }
+                else { System.out.print(gameGrid[i][j] + " |"); }
             }
             System.out.println();
         }
@@ -151,21 +134,9 @@ public class TicTacToeGame {
     }
 
     private static String getInitialCells() {
-        String acceptedChars = "_XO";
-        String cellsStr;
+        System.out.print("Enter the cells: ");
+        String temp = scan.nextLine();
 
-        while(true) {
-            System.out.print("Enter the cells: ");
-            String temp = scan.nextLine();
-
-            if(temp.toUpperCase().matches(".*[XO_].*") && temp.length() == 9) {
-                cellsStr = temp.replace('_',' ');
-                break;
-            } else {
-                System.out.println("Invalid input!\n");
-            }
-        }
-
-        return cellsStr;
+        return temp.replace('_',' ');
     }
 }
