@@ -1,70 +1,56 @@
 package com.tictactoe;
+
+import java.util.Random;
 import java.util.Scanner;
 
 public class TicTacToeGame {
-    private static String[][] gameGrid;
+    private final GameGrid gameGrid;
     static Scanner scan = new Scanner(System.in);
+    private String difficulty;
 
-    public static void run() {
-        String input = getInitialCells();
+    public TicTacToeGame(String difficulty) {
+        this.difficulty = difficulty;
+        gameGrid = new GameGrid();
+    }
 
-        char[] charArray = input.toCharArray();
-        gameGrid = createGrid(charArray);
-
-        printGrid();
-        playMove();
-        printGrid();
+    public void run() throws InterruptedException {
+        while(checkGameStatus() == 0) {
+            gameGrid.printGrid();
+            playerMove();
+            gameGrid.printGrid();
+            computerMove();
+        }
         printResult();
     }
 
-    private static void printResult(){
-        if(checkGameStatus() == 1) { System.out.println("X wins"); }
-        else if(checkGameStatus() == 2) { System.out.println("O wins"); }
-        else if(checkGameStatus() == 3) { System.out.println("Game not finished"); }
-        else { System.out.println("Draw"); }
+    private void computerMove() {
+        if (checkGameStatus() == 0) {
+            System.out.println("Making move level \"" + difficulty + "\"");
+            Random rng = new Random();
+
+            while(true) {
+                int i = rng.nextInt(3);
+                int j = rng.nextInt(3);
+                if(gameGrid.getCell(i,j).equals(" ")) {
+                    gameGrid.setCell(i, j, getPlaySign());
+                    break;
+                }
+            }
+        }
+
     }
 
-    private static int checkGameStatus() {
-        boolean winX = checkForWin("X");
-        boolean winO = checkForWin("O");
-        boolean notFinished = isGridFull();
+    public int checkGameStatus() {
+        boolean winX = gameGrid.checkForWin("X");
+        boolean winO = gameGrid.checkForWin("O");
 
         if(winX) { return 1; }
         else if(winO) { return 2; }
-        else if(!notFinished) { return 3; }
 
         return 0;
     }
 
-    private static boolean isGridFull(){
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if(gameGrid[i][j].equals(" ")){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private static boolean checkForWin(String sign) {
-        for(int i = 0; i < 3; i++) {
-            if((gameGrid[i][0].equals(sign) && gameGrid[i][1].equals(sign) && gameGrid[i][2].equals(sign))) {
-                return true;
-            }
-            if((gameGrid[0][i].equals(sign) && gameGrid[1][i].equals(sign) && gameGrid[2][i].equals(sign))) {
-                return true;
-            }
-        }
-
-        if((gameGrid[0][0].equals(sign) && gameGrid[1][1].equals(sign) && gameGrid[2][2].equals(sign))) {
-            return true;
-        }
-
-        return gameGrid[2][0].equals(sign) && gameGrid[1][1].equals(sign) && gameGrid[0][2].equals(sign);
-    }
-
-    private static void playMove() {
+    private void playerMove() {
         while(true) {
             int i, j;
             System.out.print("Enter the coordinates: ");
@@ -74,31 +60,33 @@ public class TicTacToeGame {
                 i = Integer.parseInt(coordinatesInput[0]) - 1;
                 j = Integer.parseInt(coordinatesInput[1]) - 1;
             }
-            catch (NumberFormatException NFE) {
+            catch (NumberFormatException | IndexOutOfBoundsException exception) {
                 System.out.println("You should enter numbers!");
                 continue;
             }
 
             if (!(i >= 0 && i < 3 && j >= 0 && j < 3)) {
                 System.out.println("Coordinates should be from 1 to 3!");
-            } else if(gameGrid[i][j].equals(" ")) {
-                gameGrid[i][j] = getPlaySign();
+            }
+            else if(gameGrid.getCell(i,j).equals(" ")) {
+                gameGrid.setCell(i, j, getPlaySign());
                 break;
-            } else {
+            }
+            else {
                 System.out.println("This cell is occupied! Choose another one!");
             }
         }
     }
 
-    private static String getPlaySign() {
+    private String getPlaySign() {
         int countX = 0;
         int countO = 0;
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if(gameGrid[i][j].equals("X")) {
+                if(gameGrid.getCell(i, j).equals("X")) {
                     countX++;
-                } else if(gameGrid[i][j].equals("O")) {
+                } else if(gameGrid.getCell(i, j).equals("O")) {
                     countO++;
                 }
             }
@@ -107,36 +95,9 @@ public class TicTacToeGame {
         return countX == countO ? "X" : "O";
     }
 
-    private static String[][] createGrid(char[] places) {
-        String[][] grid = new String[3][3];
-        int k = 0;
-
-        for(int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                grid[i][j] = String.valueOf(places[k++]);
-            }
-        }
-
-        return grid;
-    }
-
-    private static void printGrid() {
-        System.out.println("---------");
-        for(int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (j == 0) { System.out.print("| "); }
-                if (j != 2) { System.out.print(gameGrid[i][j] + " "); }
-                else { System.out.print(gameGrid[i][j] + " |"); }
-            }
-            System.out.println();
-        }
-        System.out.println("---------");
-    }
-
-    private static String getInitialCells() {
-        System.out.print("Enter the cells: ");
-        String temp = scan.nextLine();
-
-        return temp.replace('_',' ');
+    public void printResult() {
+        if(checkGameStatus() == 1) { System.out.println("X wins"); }
+        else if(checkGameStatus() == 2) { System.out.println("O wins"); }
+        else { System.out.println("Draw"); }
     }
 }
