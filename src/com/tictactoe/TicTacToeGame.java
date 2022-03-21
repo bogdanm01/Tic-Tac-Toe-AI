@@ -4,23 +4,52 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class TicTacToeGame {
-    private final GameGrid gameGrid;
     static Scanner scan = new Scanner(System.in);
+
+    private final GameGrid gameGrid;
+    private GameMode gameMode;
     private String difficulty;
 
-    public TicTacToeGame(String difficulty) {
-        this.difficulty = difficulty;
-        gameGrid = new GameGrid();
+    private void setDifficulty (String playerOne, String playerTwo) {
+        if (playerOne.matches("(easy)") || playerTwo.matches("(easy)")) {
+            this.difficulty = "easy";
+        }
     }
 
-    public void run() throws InterruptedException {
-        while(checkGameStatus() == 0) {
+    private void setGameMode(String playerOne, String playerTwo) {
+        if (playerOne.equalsIgnoreCase("easy") && playerTwo.equals("easy"))
+            gameMode = GameMode.EASY_EASY;
+        else if (playerOne.equalsIgnoreCase("easy") && playerTwo.equals("user"))
+            gameMode = GameMode.EASY_USER;
+        else if (playerOne.equalsIgnoreCase("user") && playerTwo.equals("user"))
+            gameMode = GameMode.USER_USER;
+        else if (playerOne.equalsIgnoreCase("user") && playerTwo.equals("easy"))
+            gameMode = GameMode.USER_EASY;
+    }
+
+    public TicTacToeGame(String playerOne, String playerTwo, GameGrid gameGrid) {
+        setGameMode(playerOne, playerTwo);
+        setDifficulty(playerOne, playerTwo);
+        this.gameGrid = gameGrid;
+    }
+
+    public void run(){
+        if(gameMode == GameMode.EASY_EASY) {
+            while(checkGameStatus() == 0 && !isGameFinished()) {
+                gameGrid.printGrid();
+                computerMove();
+            }
             gameGrid.printGrid();
-            playerMove();
-            gameGrid.printGrid();
-            computerMove();
+            printResult();
+        } else {
+            while (checkGameStatus() == 0 && !isGameFinished()) {
+                gameGrid.printGrid();
+                playerMove();
+                gameGrid.printGrid();
+                computerMove();
+            }
+            printResult();
         }
-        printResult();
     }
 
     private void computerMove() {
@@ -37,7 +66,6 @@ public class TicTacToeGame {
                 }
             }
         }
-
     }
 
     public int checkGameStatus() {
@@ -76,6 +104,17 @@ public class TicTacToeGame {
                 System.out.println("This cell is occupied! Choose another one!");
             }
         }
+    }
+
+    private boolean isGameFinished() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if(gameGrid.getCell(i, j).equals(" ")) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private String getPlaySign() {
