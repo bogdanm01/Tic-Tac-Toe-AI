@@ -26,14 +26,9 @@ public class Main {
             if (!userInput.matches("(start) (easy|user) (easy|user)")) {
                 System.out.println("Bad parameters");
             } else {
-                // TODO: Run game in main method
-                TicTacToeGame game = new TicTacToeGame(
-                        inputArgumentsTokenized[1],
-                        inputArgumentsTokenized[2],
-                        new GameGrid_2DMatrix());
+                var game = new TicTacToeGame(inputArgumentsTokenized[1], inputArgumentsTokenized[2]);
                 game.run();
             }
         }
     }
-
 }

@@ -3,7 +3,6 @@ package com.tictactoe;
 public class GameGrid_2DMatrix implements GameGrid {
 
     private static String[][] gameGrid;
-
     public GameGrid_2DMatrix(){
         createGrid();
     }
